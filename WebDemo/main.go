@@ -11,5 +11,5 @@ func handler(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
-	Server.StartServer()
+	Server.StartCustomHandlerServer()
 }

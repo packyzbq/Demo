@@ -1,4 +1,5 @@
-// 第一版server，简单调用
+// 使用简单的 handleFunc 搭建一个简易版 wiki 网站
+
 package Server
 
 import (
@@ -100,7 +101,7 @@ func makeHandler(fn func(http.ResponseWriter, *http.Request, string)) http.Handl
 	}
 }
 
-func StartServer() {
+func StartServerv1() {
 	http.HandleFunc("/", indexHandler)
 	http.HandleFunc("/view/", makeHandler(viewHandler))
 	http.HandleFunc("/edit/", makeHandler(editHandler))
