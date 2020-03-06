@@ -70,7 +70,7 @@ func indexHandler(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "/view/FrontPage", http.StatusFound)
 }
 
-var templates = template.Must(template.ParseFiles("tmpl/edit.html", "tmpl/view.html"))
+
 var validPath = regexp.MustCompile("^/(edit|save|view)/([a-zA-Z0-9]+)$")
 
 func getTitle(r *http.Request) (string, error) {
@@ -81,6 +81,7 @@ func getTitle(r *http.Request) (string, error) {
 	return m[2], nil // The title is the second subexpression.
 }
 
+var templates = template.Must(template.ParseFiles("tmpl/edit.html", "tmpl/view.html"))
 func renderTemplate(w http.ResponseWriter, tmpl string, p *Data.Page) {
 	// 每次调用 ParseFile 效率低，用 tmpl.Must 将所有模板 parse，并在需要时进行 render
 	//t, err := tmpl.ParseFiles("tmpl" + tmpl + ".html")
