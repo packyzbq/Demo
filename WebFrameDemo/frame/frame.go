@@ -1,29 +1,39 @@
 package frame
 
 import (
+	"log"
 	"net/http"
 )
 
 type HandlerFunc func(c *Context)
 
 type Engine struct {
-	router *router
+	router       *router
+	*RouterGroup // 将engine 作为顶层 group，拥有 RouterGroup所有能力
+	groups       []*RouterGroup
 }
 
 func New() *Engine {
-	return &Engine{router: newRouter()}
+	engine := &Engine{router: newRouter()}
+	engine.RouterGroup = &RouterGroup{
+		engine: engine,
+	}
+	engine.groups = []*RouterGroup{engine.RouterGroup}
+	return engine
 }
 
-func (e *Engine) addRoute(method string, pattern string, handler HandlerFunc) {
-	e.router.addRoute(method, pattern, handler)
+func (g *RouterGroup) addRoute(method string, comp string, handler HandlerFunc) {
+	pattern := g.prefix + comp
+	log.Printf("Route %4s - %s", method, pattern)
+	g.engine.router.addRoute(method, pattern, handler)
 }
 
-func (e *Engine) GET(pattern string, handler HandlerFunc) {
-	e.addRoute("GET", pattern, handler)
+func (g *RouterGroup) GET(pattern string, handler HandlerFunc) {
+	g.addRoute("GET", pattern, handler)
 }
 
-func (e *Engine) POST(pattern string, handler HandlerFunc) {
-	e.addRoute("POST", pattern, handler)
+func (g *RouterGroup) POST(pattern string, handler HandlerFunc) {
+	g.addRoute("POST", pattern, handler)
 }
 
 func (e *Engine) Run(addr string) error {
