@@ -2,6 +2,7 @@ package main
 
 import (
 	"WebFrameDemo/frame"
+	"WebFrameDemo/midware"
 	"net/http"
 )
 
@@ -31,6 +32,7 @@ import (
 
 func main() {
 	r := frame.New()
+	r.Use(midware.Logger())
 	r.GET("/index", func(c *frame.Context) {
 		c.HTML(http.StatusOK, "<h1>Index Page</h1>")
 	})
@@ -46,6 +48,7 @@ func main() {
 	}
 
 	v2 := r.Group("/v2")
+	v2.Use(midware.A())
 	{
 		v2.GET("/hello/:name", func(c *frame.Context) {
 			// expect /hello/geektutu

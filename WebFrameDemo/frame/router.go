@@ -73,10 +73,9 @@ func (r *router) handle(c *Context) {
 	if n != nil {
 		c.Params = params
 		key := c.Method + "-" + n.pattern
-		handler, ok := r.handlers[key]
-		if ok {
-			handler(c)
-		} else {
+		c.handlers = append(c.handlers, r.handlers[key])
+		_, ok := r.handlers[key]
+		if !ok {
 			log.Printf("not found handler for key:%s\n", key)
 			for k, v := range r.handlers {
 				log.Printf("key: %s, value: %s\n", k, v)
@@ -86,4 +85,5 @@ func (r *router) handle(c *Context) {
 	} else {
 		c.String(http.StatusNotFound, "404 NOT FOUND: %s\n", c.Path)
 	}
+	c.Next()
 }

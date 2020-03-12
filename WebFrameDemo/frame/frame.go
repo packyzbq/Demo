@@ -3,6 +3,7 @@ package frame
 import (
 	"log"
 	"net/http"
+	"strings"
 )
 
 type HandlerFunc func(c *Context)
@@ -20,6 +21,10 @@ func New() *Engine {
 	}
 	engine.groups = []*RouterGroup{engine.RouterGroup}
 	return engine
+}
+
+func (g *RouterGroup) Use(middlewares ...HandlerFunc) {
+	g.midWare = append(g.midWare, middlewares...)
 }
 
 func (g *RouterGroup) addRoute(method string, comp string, handler HandlerFunc) {
@@ -41,6 +46,13 @@ func (e *Engine) Run(addr string) error {
 }
 
 func (e *Engine) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	var middlewares []HandlerFunc
+	for _, group := range e.groups {
+		if strings.HasPrefix(r.URL.Path, group.prefix) {
+			middlewares = append(middlewares, group.midWare...)
+		}
+	}
 	c := newContext(w, r)
+	c.handlers = middlewares
 	e.router.handle(c)
 }
