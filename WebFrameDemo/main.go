@@ -3,6 +3,7 @@ package main
 import (
 	"WebFrameDemo/frame"
 	"WebFrameDemo/midware"
+	"fmt"
 	"net/http"
 )
 
@@ -32,9 +33,13 @@ import (
 
 func main() {
 	r := frame.New()
-	r.Use(midware.Logger())
+	r.Use(midware.Logger(), midware.Recover())
 	r.GET("/index", func(c *frame.Context) {
 		c.HTML(http.StatusOK, "<h1>Index Page</h1>")
+	})
+	r.GET("/panic", func(c *frame.Context) {
+		a := []int{1, 2, 3}
+		fmt.Println(a[4])
 	})
 	v1 := r.Group("/v1")
 	{
